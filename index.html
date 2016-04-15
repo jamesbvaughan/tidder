@@ -1,0 +1,32 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Tidder</title>
+  <meta name="description" content="Find out where a link has been posted on Reddit!">
+  <meta name="author" content="James Vaughan">
+
+  <link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="jumbotron">
+			<h1 class="text-center">Tidder</h1>
+			<input type="url" id="urlInput" class="form-control" placeholder="Paste the url you want to search for here">
+			<input type="button" class="btn btn-primary center-block" onclick="searchReddit()" value="Search">
+		</div>
+		<div class="list-group" id="results">
+			<p class="lead">If you're like me, you've seen pictures, watched videos, and read articles online and thought 'Wow, I'd love to see the discussion on Reddit about this!', or maybe you'd like to see where others have posted your content on Reddit. These are a common situations for me, so I made Tidder. Give it any link, and Tidder will give you a list of all the times that that that link has been posted to Reddit.</p>
+		</div>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
