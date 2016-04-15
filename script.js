@@ -1,5 +1,53 @@
 "use strict";
 
+const handleYoutubeURL = function (url) {
+	let video_id = '';
+	let urls = [url];
+	let prefixes = [
+		'http://www.youtube.com/watch?v=',
+		'https://www.youtube.com/watch?v=',
+		'http://www.youtu.be/',
+		'https://www.youtu.be/'
+	];
+	if (url.includes('v=')) {
+		video_id = url.split('v=')[1];
+		let ampersandPosition = video_id.indexOf('&');
+		if (ampersandPosition != -1) {
+			video_id = video_id.substring(0, ampersandPosition);
+		}
+		if (video_id !== "") {
+			for (let prefix of prefixes)
+				if (prefix + video_id != url)
+					urls.push(prefix + video_id);
+		}
+	}
+	return urls;
+};
+
+const handleYoutubeShortURL = function (url) {
+	let video_id = '';
+	let urls = [url];
+	let prefixes = [
+		'http://www.youtube.com/watch?v=',
+		'https://www.youtube.com/watch?v=',
+		'http://www.youtu.be/',
+		'https://www.youtu.be/'
+	];
+	if (url.length > 24) {
+		video_id = url.split('be/')[1];
+		let ampersandPosition = video_id.indexOf('&');
+		if (ampersandPosition != -1) {
+			video_id = video_id.substring(0, ampersandPosition);
+		}
+		if (video_id !== "") {
+			for (let prefix of prefixes)
+				if (prefix + video_id != url)
+					urls.push(prefix + video_id);
+		}
+	}
+	return urls;
+};
+
 const getURLs = function (url) {
 	if (!url.includes('http')) {
 		console.log("Hey, that's not a URL.");
@@ -7,25 +55,9 @@ const getURLs = function (url) {
 	}
 	let urls = [url];
 	if (url.includes('youtube.com')) {
-		let video_id = '';
-		let prefixes = [
-			'http://www.youtube.com/watch?v=',
-			'https://www.youtube.com/watch?v=',
-			'http://www.youtu.be/',
-			'https://www.youtu.be/'
-		];
-		if (url.includes('v=')) {
-			video_id = url.split('v=')[1];
-			let ampersandPosition = video_id.indexOf('&');
-			if (ampersandPosition != -1) {
-				video_id = video_id.substring(0, ampersandPosition);
-			}
-			if (video_id !== "") {
-				for (let prefix of prefixes)
-					if (prefix + video_id != url)
-						urls.push(prefix + video_id);
-			}
-		}
+		urls = handleYoutubeURL(url);
+	} else if (url.includes('youtu.be')) {
+		urls = handleYoutubeShortURL(url);
 	}
 	return urls;
 };
