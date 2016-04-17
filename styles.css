@@ -1,7 +1,12 @@
-.jumbotron {
-	margin-top: 10px;
+body {
+	padding-top: 10px;
 }
 
 #urlInput {
 	margin-bottom: 10px;
+}
+
+#spinner {
+	position: relative;
+	height: 50px;
 }

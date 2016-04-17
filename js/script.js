@@ -63,7 +63,6 @@ const getURLs = function (url) {
 };
 
 const linkTemplate = function (postData) {
-	console.log(postData);
 	return `
 	<a href="http://reddit.com${postData.permalink}" class="list-group-item" target="_blank">
 		<span class="badge">${postData.score}</span>
@@ -72,20 +71,34 @@ const linkTemplate = function (postData) {
 	</a>`;
 };
 
+const spinDiv = document.getElementById("spinner");
+const spinner = new Spinner().spin(spinDiv);
+
 const searchReddit = function () {
 	let redditURL = "http://www.reddit.com/api/info.json?url=";
 	let urlToSearch = document.getElementById("urlInput").value;
-	document.getElementById("results").innerHTML = "";
+	let resultDiv = document.getElementById("results");
+
+	spinDiv.style.display = "block";
+	resultDiv.innerHTML = "";
 	getURLs(urlToSearch).forEach(url => {
 		$.getJSON(redditURL + url, data => {
 			data.data.children.forEach(post => {
-				document.getElementById("results").innerHTML += linkTemplate(post.data);
+				resultDiv.innerHTML += linkTemplate(post.data);
 			});
 		});
 	});
+	setTimeout(() => {
+		spinDiv.style.display = "none";
+		if (resultDiv.innerHTML === "") {
+			resultDiv.innerHTML = `<div class="alert alert-info">It looks like that link hasn't been posted anywhere on Reddit yet.</div>`;
+		}
+	}, 2000);
 };
 
 $(document).ready(function () {
+	spinDiv.style.display = "none";
+	spinner.spin(spinDiv);
 	$("#urlInput").keypress(e => {
 		if (e.keyCode == 13)
 			searchReddit();
