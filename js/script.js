@@ -67,7 +67,7 @@ const linkTemplate = function (postData) {
 	<a href="http://reddit.com${postData.permalink}" class="list-group-item" target="_blank">
 		<span class="badge">${postData.score}</span>
 		<h4 class="list-group-item-heading">${postData.title}</h4>
-		<p class="list-group-item-text">submitted to <b>/r/${postData.subreddit}</b> by <i>${postData.author}</i> ${moment.unix(postData.created_utc).fromNow()}</p>
+		<p class="list-group-item-text">submitted to <b>/r/${postData.subreddit}</b> by <i>${postData.author}</i> ${moment.unix(postData.created_utc).fromNow()} [${postData.num_comments} comments]</p>
 	</a>`;
 };
 
@@ -81,6 +81,7 @@ const searchReddit = function () {
 
 	spinDiv.style.display = "block";
 	resultDiv.innerHTML = "";
+
 	getURLs(urlToSearch).forEach(url => {
 		$.getJSON(redditURL + url, data => {
 			data.data.children.forEach(post => {
@@ -93,7 +94,7 @@ const searchReddit = function () {
 		if (resultDiv.innerHTML === "") {
 			resultDiv.innerHTML = `<div class="alert alert-info">It looks like that link hasn't been posted anywhere on Reddit yet.</div>`;
 		}
-	}, 2000);
+	}, 3000);
 };
 
 $(document).ready(function () {
