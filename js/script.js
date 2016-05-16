@@ -28,7 +28,7 @@ const getURLs = function (url) {
 			'http://www.youtu.be/',
 			'https://www.youtu.be/'
 		];
-		if (url.includes('youtu.be'))
+		if (url.includes('youtu.be/'))
 			video_id = url.split('be/')[1].split('&')[0];
 		prefixes.forEach(prefix => urls.push(prefix + video_id));
 		return urls;
@@ -68,36 +68,35 @@ const showPosts = function () {
 };
 
 const searchReddit = function () {
-	let redditURL = "http://www.reddit.com/api/info.json?url=";
 	let urlToSearch = document.getElementById("urlInput").value;
 	let resultDiv = document.getElementById("results");
 	let header = document.getElementById("resultHeader");
 	let spinner = new Spinner();
-	let promises = [];
+	let urlResults = [];
 
 	spinner.spin(document.getElementById("spinner"));
 	posts = [];
 
 	getURLs(urlToSearch).forEach(url => {
-		promises.push(new Promise(resolve => {
-			$.getJSON(redditURL + url)
-				.done(result => resolve(result.data.children));
+		urlResults.push(new Promise(resolve => {
+			fetch("http://www.reddit.com/api/info.json?url=" + url)
+				.then(result => result.json())
+				.then(json => resolve(json.data.children));
 		}));
 	});
 
-	Promise.all(promises).then(results => {
-		results.forEach(result => result.forEach(post => posts.push(post)));
-		if (posts.length === 0) {
+	Promise.all(urlResults).then(results => {
+		results.forEach(result => posts = posts.concat(result));
+		if (posts.length) {
+			header.style.visibility = "visible";
+			header.style.display = "flex";
+			document.getElementById("numResults").innerHTML = posts.length;
+			showPosts(posts);
+		} else {
 			resultDiv.innerHTML = `
 				<div class="alert alert-info">
 					That link hasn't been posted anywhere on Reddit yet!
 				</div>`;
-		} else {
-			header.style.visibility = "visible";
-			header.style.display = "flex";
-			document.getElementById("numResults").innerHTML =
-				posts.length + " results";
-			showPosts(posts);
 		}
 		spinner.stop();
 	});
@@ -110,5 +109,5 @@ const searchReddit = function () {
 document.getElementById("urlInput").onkeypress = e => {
 	if (e.keyCode == 13) searchReddit();
 };
-document.getElementById("searchButton").onclick = e => searchReddit();
-document.getElementById("sortMethod").onchange = e => showPosts();
+document.getElementById("searchButton").onclick = searchReddit;
+document.getElementById("sortMethod").onchange = showPosts;
