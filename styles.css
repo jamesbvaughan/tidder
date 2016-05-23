@@ -1,16 +1,20 @@
-#urlInput {
-	margin-bottom: 10px;
+#search input {
+	margin-top: 10px;
 }
 
-#spinner {
-	position: relative;
-	height: 50px;
+#noLuck {
+	display: none;
 }
 
 #resultHeader {
-	visibility: hidden;
 	display: none;
 	justify-content: space-between;
 	align-items: center;
+	margin-top: -30px;
 	margin-bottom: 10px;
+}
+
+footer {
+  padding-top: 10px;
+  margin-bottom: 20px;
 }

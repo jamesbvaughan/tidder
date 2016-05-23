@@ -1,113 +1,66 @@
-// Tidder ====================================================================
-//
+// Tidder ===================================================================
 // by James Vaughan
-"use strict";
 
-// Templates =================================================================
+let posts = []
+const $ = query => document.querySelector(query)
 
-const linkTemplate = function (postData) {
-	return `
-		<a href="http://reddit.com${postData.permalink}"
-				class="list-group-item" target="_blank">
-			<span class="badge">${postData.score}</span>
-			<h4 class="list-group-item-heading">${postData.title}</h4>
-			<p class="list-group-item-text">submitted to <b>/r/${postData.subreddit}</b> by <i>${postData.author}</i> ${moment.unix(postData.created_utc).fromNow()} [${postData.num_comments} comments]</p>
-		</a>`;
-};
+// Takes a youtube url and returns an array of urls for that video
+function handleYoutubeURL(url) {
+  return [
+    'http://www.youtube.com/watch?v=', 'https://www.youtube.com/watch?v=',
+    'http://www.youtu.be/', 'https://www.youtu.be/'
+  ].map(prefix => prefix + url
+    .split(url.includes('be/') ? 'be/' : 'v=')[1].split('&')[0])
+}
 
+// Takes an array of posts, sorts them, and returns them as an html string
+function postHTML(posts) {
+  const val = $("#sort").value
+  return posts.sort((a, b) => b.data[val] - a.data[val])
+    .reduce((html, post) => html + `
+      <a href="http://reddit.com${post.data.permalink}"
+          class="list-group-item" target="_blank">
+        <span class="badge">${post.data.score}</span>
+        <h4 class="list-group-item-heading">${post.data.title}</h4>
+        <p class="list-group-item-text">
+          submitted to <b>/r/${post.data.subreddit}</b>
+          by <i>${post.data.author}</i>
+          ${moment.unix(post.data.created_utc).fromNow()}
+          [${post.data.num_comments} comments]
+        </p>
+      </a>`, "")
+}
 
-// Functions =================================================================
+// Refresh the list of posts when the sorting method changes
+$("#sort").onchange = () => $("#results").innerHTML = postHTML(posts)
 
-const getURLs = function (url) {
-	if (url.includes('youtube.com') || url.includes('youtu.be')) {
-		let video_id = url.split('v=')[1].split('&')[0];
-		let urls = [];
-		let prefixes = [
-			'http://www.youtube.com/watch?v=',
-			'https://www.youtube.com/watch?v=',
-			'http://www.youtu.be/',
-			'https://www.youtu.be/'
-		];
-		if (url.includes('youtu.be/'))
-			video_id = url.split('be/')[1].split('&')[0];
-		prefixes.forEach(prefix => urls.push(prefix + video_id));
-		return urls;
-	}
-	return [url];
-};
+// Search reddit for the given url
+$("#search").onsubmit = e => {
+  e.preventDefault()
+	const spinner = new Spinner()
+  const url = $("#urlInput").value
+  const urls = (url.includes('youtube.com') || url.includes('youtu.be')) ?
+    handleYoutubeURL(url) : [url]
 
-const sortPosts = function (posts, method) {
-	return posts.sort((a, b) => {
-		switch (method) {
-			case "Score":
-				a = a.data.score;
-				b = b.data.score;
-				break;
-			case "Comments":
-				a = a.data.num_comments;
-				b = b.data.num_comments;
-				break;
-			case "Date":
-				a = a.data.created_utc;
-				b = b.data.created_utc;
-				break;
-		}
-		return a < b ? 1
-			: a > b ? -1
-			: 0;
-	});
-};
+	$("#resultHeader").style.display = "none"
+	$("#noLuck").style.display = "none"
+	$("#results").innerHTML = ""
+	spinner.spin($("#spinner"))
+	posts = []
 
-var posts = [];
-const showPosts = function () {
-	let method = document.getElementById("sortMethod").value;
-	let resultDiv = document.getElementById("results");
-	resultDiv.innerHTML = "";
-	sortPosts(posts, method)
-		.forEach(post => resultDiv.innerHTML += linkTemplate(post.data));
-};
-
-const searchReddit = function () {
-	let urlToSearch = document.getElementById("urlInput").value;
-	let resultDiv = document.getElementById("results");
-	let header = document.getElementById("resultHeader");
-	let spinner = new Spinner();
-	let urlResults = [];
-
-	spinner.spin(document.getElementById("spinner"));
-	posts = [];
-
-	getURLs(urlToSearch).forEach(url => {
-		urlResults.push(new Promise(resolve => {
-			fetch("http://www.reddit.com/api/info.json?url=" + url)
-				.then(result => result.json())
-				.then(json => resolve(json.data.children));
-		}));
-	});
-
-	Promise.all(urlResults).then(results => {
-		results.forEach(result => posts = posts.concat(result));
-		if (posts.length) {
-			header.style.visibility = "visible";
-			header.style.display = "flex";
-			document.getElementById("numResults").innerHTML = posts.length;
-			showPosts(posts);
-		} else {
-			resultDiv.innerHTML = `
-				<div class="alert alert-info">
-					That link hasn't been posted anywhere on Reddit yet!
-				</div>`;
-		}
-		spinner.stop();
-	});
-};
-
-
-// misc ======================================================================
-
-// If the user presses [Enter], perform a search
-document.getElementById("urlInput").onkeypress = e => {
-	if (e.keyCode == 13) searchReddit();
-};
-document.getElementById("searchButton").onclick = searchReddit;
-document.getElementById("sortMethod").onchange = showPosts;
+	Promise.all(urls.map(url => new Promise(resolve =>
+        fetch("http://www.reddit.com/api/info.json?url=" + url)
+          .then(result => result.json())
+          .then(json => resolve(json.data.children)))))
+    .then(results => {
+      posts = results.reduce((all, one) => all.concat(one), [])
+      if (posts.length) {
+        $("#resultHeader").style.display = "flex"
+        $("#numResults").innerHTML = posts.length
+        $("#results").innerHTML = postHTML(posts)
+      } else {
+        $("#noLuck").style.display = "block"
+      }
+      spinner.stop()
+    })
+}
