@@ -46,19 +46,17 @@ $("#search").onsubmit = e => {
 	spinner.spin($("#spinner"))
 	posts = []
 
-	Promise.all(urls.map(url => new Promise(resolve =>
-    fetch("http://www.reddit.com/api/info.json?url=" + url)
-      .then(result => result.json())
-      .then(json => resolve(json.data.children.map(child => child.data))))))
-    .then(results => {
-      posts = results.reduce((all, one) => all.concat(one), [])
-      if (posts.length) {
-        $("#resultHeader").style.display = "flex"
-        $("#numResults").innerHTML = posts.length
-        $("#results").innerHTML = postHTML(posts)
-      } else {
-        $("#noLuck").style.display = "block"
-      }
-      spinner.stop()
-    })
+  const redditURL = "http://www.reddit.com/api/info.json?url="
+  const results = urls.map(u => fetch(redditURL + u).then(x => x.json()))
+  Promise.all(results).then(json => {
+    posts = json.reduce((all, one) => all.concat(one.data.children), [])
+    if (posts.length) {
+      $("#resultHeader").style.display = "flex"
+      $("#numResults").innerHTML = posts.length
+      $("#results").innerHTML = postHTML(posts.map(x => x.data))
+    } else {
+      $("#noLuck").style.display = "block"
+    }
+    spinner.stop()
+  })
 }
