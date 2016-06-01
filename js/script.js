@@ -49,11 +49,13 @@ $("#search").onsubmit = e => {
   const redditURL = "http://www.reddit.com/api/info.json?url="
   const results = urls.map(u => fetch(redditURL + u).then(x => x.json()))
   Promise.all(results).then(json => {
-    posts = json.reduce((all, one) => all.concat(one.data.children), [])
+    posts = json
+      .reduce((all, one) => all.concat(one.data.children), [])
+      .map(post => post.data)
     if (posts.length) {
       $("#resultHeader").style.display = "flex"
       $("#numResults").innerHTML = posts.length
-      $("#results").innerHTML = postHTML(posts.map(x => x.data))
+      $("#results").innerHTML = postHTML(posts)
     } else {
       $("#noLuck").style.display = "block"
     }
