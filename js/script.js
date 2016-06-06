@@ -12,8 +12,8 @@ const $ = query => document.querySelector(query)
 
 // Takes a youtube url and returns an array of urls for that video
 const handleYoutubeURL = url => [
-    'http://www.youtube.com/watch?v=', 'https://www.youtube.com/watch?v=',
-    'http://www.youtu.be/', 'https://www.youtu.be/'
+    'http://www.youtube.com/watch?v=',  'http://www.youtu.be/',
+    'https://www.youtube.com/watch?v=', 'https://www.youtu.be/'
   ].map(prefix => prefix + url
     .split(url.includes('be/') ? 'be/' : 'v=')[1].split('&')[0])
 
@@ -33,7 +33,7 @@ const postHTML = posts => posts
   .join('')
 
 // Refresh the list of posts when the sorting method changes
-$("#sort").onchange = (e) => {
+$("#sort").onchange = e => {
   state.sortMethod = e.target.value
   $("#results").innerHTML = postHTML(posts)
 }
