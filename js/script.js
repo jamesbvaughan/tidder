@@ -2,7 +2,10 @@
 // by James Vaughan
 
 // State
-let posts = []
+const state = {
+  posts: [],
+  sortMethod: "score"
+}
 
 // Get document elements easier
 const $ = query => document.querySelector(query)
@@ -16,7 +19,7 @@ const handleYoutubeURL = url => [
 
 // Takes an array of posts, sorts them, and returns them as an html string
 const postHTML = posts => posts
-  .sort((a, b) => b[$("#sort").value] - a[$("#sort").value])
+  .sort((a, b) => b[state.sortMethod] - a[state.sortMethod])
   .map(({permalink, score, title, subreddit,
       author, created_utc, num_comments}) => `
     <a href="http://reddit.com${permalink}" class="list-group-item">
@@ -30,7 +33,10 @@ const postHTML = posts => posts
   .join('')
 
 // Refresh the list of posts when the sorting method changes
-$("#sort").onchange = () => $("#results").innerHTML = postHTML(posts)
+$("#sort").onchange = (e) => {
+  state.sortMethod = e.target.value
+  $("#results").innerHTML = postHTML(posts)
+}
 
 // Search reddit for the given url
 $("#search").onsubmit = e => {

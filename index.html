@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Find out where a link has been posted on Reddit!">
+  <meta name="description"
+        content="Find out where a link has been posted on Reddit!">
   <meta name="author" content="James Vaughan">
 
   <title>Tidder</title>
 
   <link rel="stylesheet" href="styles.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -18,7 +20,7 @@
 			<h1 class="text-center">Tidder</h1>
 			<p class="text-center">A reverse link search for Reddit.</p>
       <form id="search">
-        <input type="url" id="urlInput" class="form-control"
+        <input id="urlInput" type="url" class="form-control" name="url"
           placeholder="Paste the url you want to search for here" autofocus>
         <input type="submit" class="btn btn-primary center-block" value="Search">
       </form>
@@ -40,7 +42,14 @@
 		</div>
 		<div class="row list-group" id="results">
 			<div class="panel panel-default">
-				<div class="panel-body">If you're like me, you've seen pictures, watched videos, and read articles online and thought "Wow, I'd love to see the discussion on Reddit about this!", or maybe you'd like to see where others have posted your content on Reddit. These are a common situations for me, so I made Tidder. Give it any link, and Tidder will give you a list of all the times that that that link has been posted to Reddit.</div>
+				<div class="panel-body">
+          If you're like me, you've seen pictures, watched videos, and read
+          articles online and thought "Wow, I'd love to see the discussion on
+          Reddit about this!", or maybe you'd like to see where others have
+          posted your content on Reddit. These are a common situations for me,
+          so I made Tidder. Give it any link, and Tidder will give you a list
+          of all the times that that that link has been posted to Reddit.
+        </div>
 			</div>
 		</div>
 		<div class="alert alert-info" id="noLuck">
